@@ -3,7 +3,7 @@
 This repository provides a **UVM-based verification environment** for an **AHB3Lite to APB bridge**. The bridge converts AHB3Lite transactions into APB transactions, enabling communication between high-performance masters and low-power peripheral devices.
 
 The design is taken from another repository. You can find the original implementation here:  
-**[[Insert Link Here](https://github.com/RoaLogic/ahb3lite_apb_bridge)]**
+**[[Repo Link](https://github.com/RoaLogic/ahb3lite_apb_bridge)]**
 
 ---
 
