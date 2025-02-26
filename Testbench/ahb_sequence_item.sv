@@ -54,16 +54,20 @@ class ahb_seq_item extends uvm_sequence_item ;
   constraint ahb_reset      {HRESETn dist {1:= 1000 , 0:= 1} ; } // low probabilty of reseting 
   constraint bridge_select  {HSEL dist {1:= 1000 , 0:= 1} ; } // high probabilty of selecting the bridge 
   constraint addr_range     {HADDR   inside {[32'h0:32'hfff]}; }
-  constraint data_range     {HWDATA  inside {[32'h0:32'hfff]}; }
   constraint size_range     {HSIZE   inside {[0 : 2]} ; } // HSIZE should be equal to or less than AHB bus width
   constraint master_ready   {HREADY dist {1:= 1000 , 0:= 1} ; } // High propbabilty of READY master 
   constraint constant_lock  {HMASTLOCK == 1'b0 ; } 
   
   
-
+  // Reset Function 
+  function void Reset() ;
+    HRDATA    = 32'hxxxx_xxxx ;
+    HREADYOUT = 1'b1 ;
+    HRESP     = OKAY ;
+  endfunction 
   
   
-  endclass 
+endclass 
   
   
   

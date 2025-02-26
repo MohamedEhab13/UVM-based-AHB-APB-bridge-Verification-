@@ -1,7 +1,7 @@
 class ahb_agent extends uvm_agent ;
   `uvm_component_utils(ahb_agent)
   
-  
+  // Components
   ahb_driver ahb_driver_h ;
   ahb_monitor ahb_monitor_h ;
   ahb_sequencer ahb_sequencer_h ;

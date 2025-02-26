@@ -58,6 +58,14 @@ module top ;
  initial begin
     forever begin 
        #5  hclk = ~hclk;
+   //    #10 pclk = ~pclk;
+    end
+  end
+  
+  // Clock Generation 
+ initial begin
+    forever begin 
+       
        #10 pclk = ~pclk;
     end
   end
@@ -68,7 +76,7 @@ module top ;
   initial begin     
     uvm_config_db # (virtual ahb_intf)::set(null,"*","ahb_intf_h",ahb_intf_h); 
     uvm_config_db # (virtual apb_intf)::set(null,"*","apb_intf_h",apb_intf_h);  
-    run_test("single_read_test");
+    run_test("double_write_test");
   end
   
   

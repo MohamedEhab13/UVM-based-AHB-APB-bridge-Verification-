@@ -8,6 +8,8 @@ import uvm_pkg::* ;
   // Sequence item Declaration  
   ahb_seq_item ahb_monitor_item ;
   
+  // Config class Declaration 
+  ahb_cnfg ahb_cnfg_h ;
   
   // Virtual Interface Declaration 
   virtual ahb_intf ahb_intf_h ;
@@ -27,9 +29,18 @@ import uvm_pkg::* ;
   // Build Phase 
   function void build_phase(uvm_phase phase);    
     super.build_phase(phase);
+    
+    // Get Interface 
     if(!(uvm_config_db #(virtual ahb_intf)::get(this,"*","ahb_intf_h",ahb_intf_h))) 
     `uvm_error(get_type_name(),"failed to get virtual interface inside AHB Monitor class")    
-    ahb_monitor_ap  = new("ahb_monitor_ap",this);
+    
+    // Get Configuartion  
+    if (!uvm_config_db  #(ahb_cnfg) ::get(this,"" , "ahb_configuration", ahb_cnfg_h ))
+    `uvm_fatal(get_type_name(), "configuration not found" )
+      
+    // Create AHB analysis port 
+    ahb_monitor_ap  = new("ahb_monitor_ap",this);  
+      
   endfunction : build_phase 
       
       
@@ -47,8 +58,12 @@ import uvm_pkg::* ;
     
     forever begin 
       
+      // Synchronize with Driver 
+      wait (ahb_cnfg_h.sync_start.triggered);
+      
       ahb_monitor_item = ahb_seq_item::type_id::create("ahb_monitor_item"); 
       
+      // Sample AHB Interface Signals 
       @(posedge ahb_monitor_intf_h.hclk)  
       ahb_monitor_item.HRESETn   = ahb_monitor_intf_h.HRESETn ;
       ahb_monitor_item.HSEL      = ahb_monitor_intf_h.HSEL   ;
@@ -63,11 +78,10 @@ import uvm_pkg::* ;
       ahb_monitor_item.HREADYOUT = ahb_monitor_intf_h.HREADYOUT ;
       ahb_monitor_item.HREADY    = ahb_monitor_intf_h.HREADY ;
       ahb_monitor_item.HRESP     = ahb_monitor_intf_h.HRESP ;
-
-      //ahb_monitor_ap.write(ahb_monitor_item); 
-     
-      ahb_monitor_item.print() ;
-   
+      
+      // Call AHB write function in scoreboard 
+      ahb_monitor_ap.write(ahb_monitor_item); 
+        
     end // forever block 
       
   endtask : run_phase 

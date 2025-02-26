@@ -1,6 +1,7 @@
 class apb_agent extends uvm_agent;
   `uvm_component_utils(apb_agent)
   
+  // Components 
   apb_driver apb_driver_h;
   apb_monitor apb_monitor_h;
   apb_sequencer apb_sequencer_h;

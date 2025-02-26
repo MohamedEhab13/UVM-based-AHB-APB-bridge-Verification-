@@ -8,6 +8,8 @@ import uvm_pkg::* ;
   // Sequence item Declaration  
   apb_seq_item apb_monitor_item ;
   
+  // Config class Declaration 
+  apb_cnfg apb_cnfg_h ; 
   
   // Virtual Interface Declaration 
   virtual apb_intf apb_intf_h ;
@@ -27,9 +29,18 @@ import uvm_pkg::* ;
   // Build Phase 
   function void build_phase(uvm_phase phase);    
     super.build_phase(phase);
+    
+    // Get Interface 
     if(!(uvm_config_db #(virtual apb_intf)::get(this,"*","apb_intf_h",apb_intf_h))) 
      `uvm_error(get_type_name(),"failed to get virtual interface inside APB Monitor class")    
-      apb_monitor_ap  = new("apb_monitor_ap",this);
+    
+    // Get Configuartion   
+    if (!uvm_config_db  #(apb_cnfg) ::get(this,"" , "apb_configuration", apb_cnfg_h ))
+     `uvm_fatal(get_type_name(), "configuration not found" )  
+      
+    // Create APB analysis port    
+    apb_monitor_ap  = new("apb_monitor_ap",this);
+    
   endfunction : build_phase 
       
       
@@ -47,9 +58,13 @@ import uvm_pkg::* ;
     
     forever begin 
       
+      // Synchronize with Driver 
+      wait (apb_cnfg_h.sync_start.triggered);
+      
       apb_monitor_item = apb_seq_item::type_id::create("apb_monitor_item"); 
       
-      @(posedge apb_monitor_intf_h.pclk)        
+      // Sample APB Interface Signals 
+      @(posedge apb_monitor_intf_h.pclk)       
       apb_monitor_item.PRESETn   = apb_monitor_intf_h.PRESETn ;
       apb_monitor_item.PSEL      = apb_monitor_intf_h.PSEL    ;
       apb_monitor_item.PADDR     = apb_monitor_intf_h.PADDR   ;
@@ -62,9 +77,8 @@ import uvm_pkg::* ;
       apb_monitor_item.PSTRB     = apb_monitor_intf_h.PSTRB   ;
       apb_monitor_item.PSLVERR   = apb_monitor_intf_h.PSLVERR ;
       
-   // apb_monitor_ap.write(apb_monitor_item); 
-    
-    apb_monitor_item.print() ;
+      // Call APB write function 
+      apb_monitor_ap.write(apb_monitor_item); 
     
     end // forever block 
       

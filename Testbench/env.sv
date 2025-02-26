@@ -31,9 +31,9 @@ class env extends uvm_env;
   // Connect Phase 
     function void connect_phase (uvm_phase phase);
       super.connect_phase(phase); 
-//       ahb_agent.ahb_monitor.monitor_ap.connect(scoreboard_h.sb_mon_port) ; // Connect monitor to scoreboard by analysis port              
+      ahb_agent_h.ahb_monitor_h.ahb_monitor_ap.connect(scoreboard_h.ahb_ap) ; // Connect monitor to scoreboard by analysis port              
 //       ahb_agent.ahb_monitor.monitor_ap.connect(coverage_collector_h.cov_mon_port) ; // Connect monitor to Coverage by analysis port  
-//       apb_agent.apb_monitor.monitor_ap.connect(scoreboard_h.sb_mon_port) ; // Connect monitor to scoreboard by analysis port              
+      apb_agent_h.apb_monitor_h.apb_monitor_ap.connect(scoreboard_h.apb_ap) ; // Connect monitor to scoreboard by analysis port              
 //       apb_agent.apb_monitor.monitor_ap.connect(coverage_collector_h.cov_mon_port) ; // Connect monitor to Coverage by analysis port  
   endfunction :connect_phase
   

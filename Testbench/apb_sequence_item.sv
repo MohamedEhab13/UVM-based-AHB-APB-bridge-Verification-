@@ -48,6 +48,15 @@ class apb_seq_item extends uvm_sequence_item ;
   constraint data_range  {PRDATA  inside {[32'h0:32'hfff]}; }
   
  
-  
+  // Reset Function 
+  function void Reset() ;
+     PSEL    = 1'b0;
+     PPROT   = 1'b0;
+     PADDR   =  'h0;
+     PWRITE  = 1'b0;
+     PENABLE = 1'b0;
+     PWDATA  =  'h0;
+     PSTRB   =  'h0;
+  endfunction 
   
   endclass 

@@ -6,6 +6,8 @@ class ahb_driver extends uvm_driver #(ahb_seq_item);
   // Sequence item Declaration  
   ahb_seq_item ahb_driver_item ;
   
+  // Config class Declaration 
+  ahb_cnfg ahb_cnfg_h ;
   
   // Temporary storage for write data 
   logic [HDATA_SIZE  -1:0] temp_write_data ;
@@ -27,8 +29,15 @@ class ahb_driver extends uvm_driver #(ahb_seq_item);
   // Build Phase 
   function void build_phase(uvm_phase phase);    
     super.build_phase(phase);
+    
+    // Get Interface 
     if(!(uvm_config_db #(virtual ahb_intf)::get(this,"*","ahb_intf_h",ahb_intf_h))) 
       `uvm_error(get_type_name(),"failed to get virtual interface inside AHB Driver class") 
+     
+    // Get Configuartion   
+    if (!uvm_config_db  #(ahb_cnfg) ::get(this,"" , "ahb_configuration", ahb_cnfg_h ))
+      `uvm_fatal(get_type_name(), "configuration not found" ) 
+      
   endfunction : build_phase 
       
       
@@ -57,6 +66,11 @@ class ahb_driver extends uvm_driver #(ahb_seq_item);
   virtual task drive (ahb_seq_item ahb_tr) ;
     
     @(posedge ahb_driver_intf_h.hclk) ;
+    
+    // Synchronize with Monitor
+    -> ahb_cnfg_h.sync_start;
+    
+    // Drive Reset
     ahb_driver_intf_h.HRESETn <= ahb_tr.HRESETn ;
     
     if(ahb_driver_intf_h.HREADYOUT) begin  // HREADYOUT check begin 
@@ -74,9 +88,7 @@ class ahb_driver extends uvm_driver #(ahb_seq_item);
         ahb_driver_intf_h.HTRANS <= ahb_tr.HTRANS ;
         ahb_driver_intf_h.HMASTLOCK <= ahb_tr.HMASTLOCK ;
         ahb_driver_intf_h.HREADY <= ahb_tr.HREADY ;
-        
-//         if(ahb_tr.HWRITE == 0) // Read transfer 
-//           ahb_driver_intf_h.HWDATA <= 32'bx ;
+ 
         
         case(ahb_tr.HTRANS) // HTRANS check begin 
           
